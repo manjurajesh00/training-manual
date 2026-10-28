@@ -1,15 +1,29 @@
 name: GitHub Actions Workshop
 on:
    workflow_dispatch:
+permissions:
+  contents: read
 jobs:
-   explore:
-      runs-on: ubuntu-latest
-      steps:
-         # uses: calls a Marketplace action — this one clones your repo
-         - name: Checkout code
-           uses: actions/checkout@v4
-         - name: Explore the repository
-           run: |
-             echo "Runner directory: $PWD"
-             echo "Repository files:"
-             find . -maxdepth 2 -type f | sort
+  metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Calculate and publish metrics
+        shell: bash
+        run: |
+          FILES=$(find . -path './.git' -prune -o -type f -print | wc -l)
+          DIRECTORIES=$(find . -path './.git' -prune -o -type d -print | wc -l)
+          BYTES=$(du -sb --exclude=.git . | cut -f1)
+          {
+           echo "# Repository metrics"
+           echo ""
+           echo "| Metric | Value |"
+           echo "|---|---:|"
+           echo "| Files | $FILES |"
+           echo "| Directories | $DIRECTORIES |"
+           echo "| Total bytes | $BYTES |"
+           echo ""
+           echo "_Measured at commit \`${GITHUB_SHA::7}\`._"
+         } >> "$GITHUB_STEP_SUMMARY"
+
