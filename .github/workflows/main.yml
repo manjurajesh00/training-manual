@@ -25,5 +25,5 @@ jobs:
            echo "| Total bytes | $BYTES |"
            echo ""
            echo "_Measured at commit \`${GITHUB_SHA::7}\`._"
-         } >> "$GITHUB_STEP_SUMMARY"
+          } >> "$GITHUB_STEP_SUMMARY"
 
